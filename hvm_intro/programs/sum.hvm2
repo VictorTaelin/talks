@@ -1,0 +1,13 @@
+data Tree = (Leaf x) | (Node x0 x1)
+
+gen = λn match n {
+  0   : (Leaf 1)
+  1+p : (Node (gen p) (gen p))
+}
+
+sum = λt
+  let case_leaf = λx x
+  let case_node = λx0 λx1 (+ (sum x0) (sum x1))
+  (t case_leaf case_node)
+
+main = (sum (gen 24))
