@@ -105,11 +105,11 @@ void* sumTree(void* args) {
 
 # Por que linguagens não usam todos os núcleos?
 
-- Linguagens são modeladas para 1 núcleo (loops são sequenciais)
-
 - Overheads podem não compensar (spawn, locks, atomics...)
 
-- Referências mutáveis causam 5790 problemas.
+- Linguagens tradicionalmente foram modeladas para 1 núcleo.
+
+- Loops são sequenciais, referências mutáveis causam 1000 problemas.
 ```c
 // duas threads executam essa função, porém
 // x só é incrementado uma vez...??! ?? ?   ?
@@ -126,8 +126,6 @@ for (int i = 0; i < 64; ++i) {
 }
 ```
 - Basicamente um problema de pesquisa, sem resultados suficientemente bons.
-
-- Até...
 
 # HVM: um runtime massivamente paralelo
 
@@ -473,6 +471,8 @@ show(num4) # 8
 
 - **Capaz de computar termos lambda otimamente, e em paralelo!**
 
+- Let's go deeper...
+
 # Interaction Combinators: 3 symbols, 6 interactions
 
            Eraser (ERA)          Constructor (CON)        Duplicator (DUP)       
@@ -541,10 +541,49 @@ print(dobro(1))
 
 ```haskell
 let dobro = λx.
-    λs.λz.((x λk(s (s k))) z)
+    λS.λZ.((x λk(S (S k))) Z)
 
-(dobro λs.λz.(s z))
+X = (dobro λs.λz.(s z))
 ```
+
+# HVM: exemplo completo
+
+> 3. Transformamos em Interaction Combinators
+
+                .............              
+                :           :              
+               (@)          λx             
+          .....: :  x        :..           
+          :      X  :          λS
+          λs       (@)          :..        
+      s    :..     : :.           :        
+      :      :     λk :           λZ       
+     (@)     λz     : :   S   S    :...... 
+     : :      :     : :   :   :          : 
+     z :      :     : :  (@) (@)    .... : 
+       :......:     : : k: :.: :   (@) : : 
+                    :.:........:  Z: :.:.: 
+                      :................:   
+
+# HVM: exemplo completo
+
+> 3. Transformamos em Interaction Combinators
+
+                .............              
+                :           :              
+               (@)          λx             
+          .....: :  .......: :..           
+          :      X  :          λs
+          λs       (@)      ..: :..        
+      ...: :..     : :.     :     :        
+      :      :    (@) :    /#\    λz       
+     (@)     λz   : : :   .: :.  : :...... 
+     : :    : :   : : :   :   :  :       : 
+     :.:....: :   : : :  (@) (@) :  .... : 
+       :......:   :.:.:..: :.: : : (@) : : 
+                    :.:........: :.: :.:.: 
+                      :................:   
+
 
 # HVM: exemplo completo
 
@@ -893,7 +932,7 @@ let dobro = λx.
 
 A HOC é uma empresa brasileira inovando a computação.
 
-Temos uma comunidade de apaixonados pela área.
+Temos uma comunidade de pessoas apaixonadas pela área.
 
 Entusiastas de todos os níveis são bem-vindos!
 
