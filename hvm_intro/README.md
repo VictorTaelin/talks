@@ -67,21 +67,18 @@
 # GPT programando sequencial
 
 > Implement a C program that creates a tree with ints from 0 to 2^24-1 and then sums all.
-
 ```c
 long long sumTree(Node* root) {
     if (root == NULL) return 0;
     return root->data + sumTree(root->left) + sumTree(root->right);
 }
 ```
-
 **Tamanho : 4 linhas**
 **Tempo   : 0.537 segundos**
 
 # GPT programando paralelo
 
 > Create the same program, but now using 16 threads to accelerate the computation.
-
 ```c
 void* sumTree(void* args) {
     ThreadArgs* threadArgs = (ThreadArgs*)args;
@@ -102,10 +99,8 @@ void* sumTree(void* args) {
     return NULL;
 }
 ```
-
 **Tamanho : 18 linhas**
 **Tempo   : 2 meses**
-
 *https://chat.openai.com/share/805b2df2-a9ea-4a1c-b52b-bb69fa7f624b*
 
 # Por que linguagens não usam todos os núcleos?
@@ -114,26 +109,22 @@ void* sumTree(void* args) {
 
 - Overheads podem não compensar (spawn, locks, atomics...)
 
-- Incompatível com referências mutáveis (race conditions, etc.)
-
+- Referências mutáveis causam 5790 problemas.
 ```c
-// se duas threads executam essa função, pode
-// ser que *x só seja incrementado uma vez!
-void fn(int *x) {
+// duas threads executam essa função, porém
+// x só é incrementado uma vez...??! ?? ?   ?
+void add_1(int *x) {
   int val = *x;
   *x = val + 1;
 }
 ```
-
 - Análise **estática** não funciona. É necessário informação **dinâmica**!
-
 ```c
-// paralelizar ou não? depende do momento...
-for (int i = 0; i < limit; ++i) {
-  arr[i] *= 2;
+// paralelizar ou não? depende!
+for (int i = 0; i < 64; ++i) {
+  arr[i] = funcao_pesada(arr[i]);
 }
 ```
-
 - Considerado problema de pesquisa, sem resultados suficientemente bons.
 
 # HVM: um runtime massivamente paralelo
@@ -148,7 +139,7 @@ for (int i = 0; i < limit; ++i) {
 
 - Procedural: loops, branching, efeitos, "mutabilidade pura"...
 
-- **A promessa: se a sua lógica não é sequencial, seu executável será paralelo!**
+- **A promessa: escreva um programa "paralelizável", ganhe um executável paralelo!**
 
 - Protótipo lançado ano passado, 1a versão estável em algumas semanas!
 
@@ -304,7 +295,7 @@ Muito simples!
 
 - 5. Convertemos de volta para um termo do **Cálculo Lambda**
 
-- 6. Convertemos de volta pra **Combinadores de Interação**
+- 6. Convertemos de volta pra linguagem original
 
 - 7. Printamos resultados, lançamos chamadas de sistema, etc.
 
@@ -335,7 +326,6 @@ Muito simples!
 # Redescobrindo o Cálculo Lambda...
 
 > Começamos com programinha aleatório...
-
 ```python
 def show(arr):
     print(str(arr))
@@ -353,7 +343,6 @@ show(nums) # [0, 2, 4, 6, 8]
 # Redescobrindo o Cálculo Lambda...
 
 > Tiramos o "if"...
-
 ```python
 def show(arr):
     print(str(arr))
@@ -370,7 +359,6 @@ show(nums) # [0, 2, 4, 6, 8]
 # Redescobrindo o Cálculo Lambda...
 
 > Tiramos o "for"...
-
 ```python
 def show(arr):
     print(str(arr))
@@ -390,7 +378,6 @@ show(nums) # [0, 2, 4, 6, 8]
 # Redescobrindo o Cálculo Lambda...
 
 > Tiramos o "array"...
-
 ```python
 def show(num):
     print(str(num))
@@ -418,7 +405,6 @@ show(num4) # 8
 # Redescobrindo o Cálculo Lambda...
 
 > Tiramos os números!
-
 ```python
 def show(num):
     print(str(num(lambda x: x+1)(0)))
@@ -443,7 +429,7 @@ show(num3) # 6
 show(num4) # 8
 ```
 
-> Pronto, esse é o Cálculo Lambda!
+> O que restou é o Cálculo Lambda!
 
 # De Linguagem X para Cálculo Lambda
 
@@ -459,17 +445,13 @@ show(num4) # 8
 | tripla      | (1, 2, 3)          | λt. (t 1 2 3)                        |
 | projeção    | (a, b) = (1, 2); X | (λt.(t 1 2) λa. λb. X)               |
 | lista       | [1, 2, 3, ...]     | λc. λn. (c 1 (c 2 (c 3 ... n)))      |
-| map         | [f(x) in list]     | (list λh.λt.λc.(c (f h) t) λc.λn.n)  |
 | indexação   | list[2]            | (head (2 tail list))                 |
 | loop        | while x: f()       | (Y λW λc λs λf (if (c s) (W c (f ... |
 | efeitos     | print("oi")        | monadic binding to external env...   |
-| ...         | ...                | ...                                  |
 
 - TODO conceito pode ser representado, de uma forma ou de outra!
 
-- Diversas maneiras de representar cada conceito, com diferentes méritos
-
-- Difícil? Talvez! Mas você não precisar usar o Cálculo Lambda diretamente.
+- Difícil? Talvez! Mas você não precisar usar o ele diretamente.
 
 - O paradigma funcional é baseado nele. Haskell, Lean, Clojure, Elixir...
 
@@ -887,38 +869,55 @@ let dobro = λx.
 
 # Resumo
 
-1. Processadores estão ficando cada vez mais paralelos
+- Processadores estão ficando cada vez mais paralelos
 
-2. Programas, em geral, não tem acompanhado a trend
+- Programas, em geral, não tem acompanhado a trend
 
-3. Motivo: programar paralelamente é difícil e custoso
+- Motivo: programar paralelamente é difícil e custoso
 
-4. Abordagens para paralelismo automático não tiveram êxito
+- Abordagens anteriores para paralelismo automático: pouco êxito
 
-5. HVM: paralelismo automático com resultados promissores
+- HVM = paralelismo automático com resultados promissores
 
-6. Baseada em um modelo computacional projetado para paralelismo
+- Baseada em um modelo computacional projetado para paralelismo
 
-7. **programa -> λterm -> icomb -> eval() -> λterm -> programa**
+- Receita: **lang -> λterm -> icomb -> eval() -> λterm -> lang**
 
-# Obrigado!
+- Rodar programas paralelamente, via icombs, traz ganhos expressivos
 
-A HOC é uma empresa brasileira inovando no âmbito tecnológico.
+# Participe!
 
-Temos uma comunidade de apaixonados por computação.
+A HOC é uma empresa brasileira inovando a computação.
+
+Temos uma comunidade de apaixonados pela área.
 
 Entusiastas de todos os níveis são bem-vindos!
 
 Discord: https://discord.HigherOrderCO.com/
 
-Minhas redes:
-
-- Twitter: @VictorTaelin
-
-- Instagram: @VictorTaelin
-
-- GitHub: @VictorTaelin
-
-- Reddit: /u/SrPeixinho
-
+# Obrigado!                                                                                     ᵖʸᵗʰᵒⁿ
+                                                                                                   │
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠲⠶⣶⣶⣤⣄⣀⠀⠀⠀⠀                                                                              │⠀⠀
+⠀⠀⠀⠀⠀⣤⣄⠀⠀⠀⠀⠀⠀⠈⠙⢿⣿⣷⣦⡀⠀⠀⠀                                                                            │
+⠀⠀⠀⠀⠀⢹⣿⣿⣦⣀⣀⣀⣠⣤⣤⣤⡽⢿⣿⣿⣦⡀⠀     thanks thanks                                                          │
+⠀⠀⠀⠀⠀⢀⣿⣿⠿⠿⣿⣿⣿⣿⣿⡿⠀⠈⣿⣿⣿⣷⡀                                                                            │
+⠀⠀⠀⠀⠀⠸⢱⢹⣷⠞⢛⣿⣿⣿⡿⠁⠀⠀⢹⣿⣿⣿⣧         much agradecido                                                    │
+⠀⠀⠀⠀⠀⢿⣾⣿⣇⡀⠧⢬⣿⣿⠁⠀⠀⠀⢸⣿⣿⣿⣿                                                                            │
+⡄⠀⠀⠀⠀⠈⠻⢿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⣿⣿⣿⣿⣿                                                                            │
+⢻⣄⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣦⡀⠀⠀⣼⣿⣿⣿⣿⡟    thanks yous                                                             │
+⠈⢿⣦⣀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣷⣾⣿⣿⣿⣿⡿⠁                                                                            │
+⠀⠈⠻⣿⣷⣶⣤⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀         very arigatou                                                      │
+⠀⠀⠀⠈⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠁⠀⠀⠀                                                                            │
+⠀⠀⠀⠀⠀⠀⠉⠙⠛⠿⠿⠿⠿⠿⠛⠋⠉⠀⠀⠀⠀ // ?         ? / /!!                                                         │
+                                                                                                   │
+Minhas redes:                                                                                      │
+                                                                                                   │
+- Twitter: @VictorTaelin                                                                           │
+                                                                                                   │
+- Instagram: @VictorTaelin                                                                         │
+                                                                                                   │
+- GitHub: @VictorTaelin                                                                            │
+                                                                                                   │
+- Reddit: /u/SrPeixinho                                                                            │
+                                                                                                  ...
 -------------------------------------------------------------------------------------------------------
