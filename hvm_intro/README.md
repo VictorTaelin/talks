@@ -62,7 +62,7 @@
 
 - Complexidade na estruturação do código
 
-"vc tem 2 problemas"
+> Algumas pessoas encontram um problema e dizem: "vou usar threads". Agora elas tê m doois prlbmeas.
 
 # GPT programando sequencial
 
@@ -125,7 +125,9 @@ for (int i = 0; i < 64; ++i) {
   arr[i] = funcao_pesada(arr[i]);
 }
 ```
-- Considerado problema de pesquisa, sem resultados suficientemente bons.
+- Basicamente um problema de pesquisa, sem resultados suficientemente bons.
+
+- Até...
 
 # HVM: um runtime massivamente paralelo
 
@@ -884,6 +886,8 @@ let dobro = λx.
 - Receita: **lang -> λterm -> icomb -> eval() -> λterm -> lang**
 
 - Rodar programas paralelamente, via icombs, traz ganhos expressivos
+
+- Pretendemos dar suportes a múltiplas linguagens futuramente
 
 # Participe!
 
