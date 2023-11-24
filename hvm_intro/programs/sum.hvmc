@@ -1,21 +1,16 @@
+@6 = ({2 a b} c)
+& @Node ~ (d (e c))
+& @gen ~ (a e)
+& @gen ~ (b d)
+@7 = (a a)
+@8 = (a (b c))
+& @sum ~ (a <+ d c>)
+& @sum ~ (b d)
 @Leaf = (a ((a b) (* b)))
 @Node = (a (b (* ((a (b c)) c))))
-
-@gen = (?<(a @genS) b> b)
-  & @Leaf ~ (#1 a)
-
-@genS = ({2 a b} c)
-  & @Node ~ (e (d c))
-  & @gen ~ (a d)
-  & @gen ~ (b e)
-
-@sum = ((@sumZ (@sumS a)) a)
-
-@sumZ = (a a)
-@sumS = (a (b c))
-  & @sum ~ (a <+ e c>)
-  & @sum ~ (b e)
-
+@gen = (?<(a @6) b> b)
+& @Leaf ~ (#1 a)
 @main = a
-  & @sum ~ (b a)
-  & @gen ~ (#24 b)
+& @sum ~ (b a)
+& @gen ~ (#24 b)
+@sum = ((@7 (@8 a)) a)

@@ -21,6 +21,7 @@
 
 
 
+
 > Victor Taelin
 
 # Trend paralelismo - hardware
@@ -62,7 +63,9 @@
 
 - Complexidade na estruturação do código
 
-> Algumas pessoas encontram um problema e dizem: "vou usar threads". Agora elas tê m doois prlbmeas.
+> Algumas pessoas encontram um problema e dizem: "vou usar threads".
+
+> Agora elas tê m doois prlbmeas.
 
 # GPT programando sequencial
 
@@ -111,8 +114,7 @@ void* sumTree(void* args) {
 
 - Loops são sequenciais, referências mutáveis causam 1000 problemas.
 ```c
-// duas threads executam essa função, porém
-// x só é incrementado uma vez...??! ?? ?   ?
+// só incrementou 1 vez???! ?!? ?   ?                                         ?
 void add_1(int *x) {
   int val = *x;
   *x = val + 1;
@@ -129,53 +131,73 @@ for (int i = 0; i < 64; ++i) {
 
 # HVM: um runtime massivamente paralelo
 
-- Runtimes são "programas que rodam programas"
+- A **HVM** executa linguagens de **alto nível** com **paralelismo automático**
 
-- HVM executa linguagens de *alto nível* com paralelismo automático
+- **Geral:** suporta todo programa (em contraste com soluções "array-based")
 
-- Completamente geral (em contraste com soluções data-parallel/array-based)
+- **Funcional:** lambdas, recursividade, tipos algébricos, pattern-matching...
 
-- Funcional: lambdas, recursividade, tipos algébricos, pattern-matching...
+- **Procedural:** loops, branching, efeitos, "mutabilidade pura"...
 
-- Procedural: loops, branching, efeitos, "mutabilidade pura"...
+- **Promessa** escreva um programa "paralelizável", ganhe um executável paralelo!
 
-- **A promessa: escreva um programa "paralelizável", ganhe um executável paralelo!**
+- *Para ilustrar, vamos comparar tempos de execução somando árvores!*
 
-- Protótipo lançado ano passado, 1a versão estável em algumas semanas!
+# Somando árvores: exemplo
 
-- Para ilustrar, vamos comparar tempos de execução de "programas equivalentes"
+              _________(+)__________           
+             /                      \          
+         __(+)__                 __(+)__       
+        /       \               /       \      
+      (+)       (+)           (+)       (+)    
+     /   \     /   \         /   \     /   \   
+   (+)   (+) (+)   (+)     (+)   (+) (+)   (+) 
+   / \   / \ / \   / \     / \   / \ / \   / \ 
+   1 6   3 5 1 3   2 3     0 1   7 0 3 1   2 4
+
+# Somando árvores: exemplo
+
+              _________(+)__________           
+             /                      \          
+         __(+)__                 __(+)__       
+        /       \               /       \      
+      (+)       (+)           (+)       (+)    
+     /   \     /   \         /   \     /   \   
+    7     8   4     5       1     7   4     6  
+
+# Somando árvores: exemplo
+
+              _________(+)__________           
+             /                      \          
+         __(+)__                 __(+)__       
+        /       \               /       \      
+       15        9             8        10
+
+# Somando árvores: exemplo
+
+              _________(+)__________           
+             /                      \          
+           24                       18         
+
+# Somando árvores: exemplo
+
+                       42
 
 # Somando árvores - Python
 
 ```python
-def gen(n: int) -> dict:
-    if n == 0:
-        return {"tag": "Leaf", "x": 1}
-    else:
-        p = n - 1
-        return {"tag": "Node", "x0": gen(p), "x1": gen(p)}
-
-def sum_tree(t: dict) -> int:
+def sum(t: dict) -> int:
     if t["tag"] == "Leaf":
         return t["x"]
     else:
-        return sum_tree(t["x0"]) + sum_tree(t["x1"])
+        return sum(t["x0"]) + sum(t["x1"])
 
-print(sum_tree(gen(24)))
+print(sum(gen(24)))
 ```
 
 # Somando árvores - JavaScript
 
 ```javascript
-function gen(n) {
-  if (n === 0) {
-    return {tag: "Leaf", x: 1};
-  } else {
-    const p = n - 1;
-    return {tag: "Node", x0: gen(p), x1: gen(p)};
-  }
-}
-
 function sum(t) {
   if (t.tag === "Leaf") {
     return t.x;
@@ -190,15 +212,6 @@ console.log(sum(gen(24)));
 # Somando árvores - C
 
 ```c
-Tree* gen(unsigned int n) {
-  if (n == 0) {
-    return Leaf(1);
-  } else {
-    unsigned int p = n - 1;
-    return Node(gen(p), gen(p));
-  }
-}
-
 unsigned int sum(Tree* t) {
   if (t->tag == LeafTag) {
     return t->x;
@@ -216,13 +229,6 @@ int main() {
 # Somando árvores - HVM
 
 ```haskell
-data Tree = (Leaf x) | (Node x0 x1)
-
-gen = λn match n {
-  0: (Leaf 1)
-  +: (Node (gen n-1) (gen n-1))
-}
-
 sum = λt match t {
   Leaf: t.x
   Node: (+ (sum t.x0) (sum t.x1))
@@ -242,17 +248,13 @@ main = (sum (gen 24))
 
 > Apple M3 Max, max opt lv, md5
 
-# Como é possível?
+# Por que a HVM rodou mais rápido?
 
-[ ] A HVM foi feita pelo GPT-6
+[ ] Ela foi feita pelo GPT-6
 
-[ ] Eu roubei nos benchmarks
+[ ] Algoritmos diferentes
 
-[ ] A HVM é mais rápida que C
-
-[X] Paralelismo
-
-> O Apple M3 Max tem 12 núcleos de performance
+[X] Ela usou 12 núcleos 😬
 
 # Tempo X Núcleos
                                                          🌙 Python
@@ -273,17 +275,15 @@ main = (sum (gen 24))
            0   1   2   3   4   5   6   7   8   9  10  11  12
                                 Núcleos
 
-- Ainda há muito a melhorar em 1 núcleo!
+- HVM perde no single-core, e usar threads manualmente em C = mais rápido
 
-- Uso manual e correto de threads em C sempre será mais rápido!
+- Então pra que? *Paralelismo correto, sem esforço, em linguagens alto nível*
 
-- Então por que? Paralelismo correto, sem esforço, em linguagens alto nível
+- Suporta features quase impossíveis de paralelizar na mão, ex: closures
 
-- Lambdas, referências compartilhadas, comunicação... a HVM cuida de **tudo**
+- Exemplos mais complexos em **https://github.com/HigherOrderCO/HVM-Core**
 
-# Qual o segredo?
-
-Muito simples!
+# HVM: a receita
 
 - 1. Pegamos um programa de alto nível (Python, JavaScript, etc.)
 
@@ -299,7 +299,9 @@ Muito simples!
 
 - 7. Printamos resultados, lançamos chamadas de sistema, etc.
 
-> ????????? ??      ? ? ?           ?
+**Muito fácil!**
+
+> ????????? ??      ? ?̵̦͈̇̀͂͝͠ ?           ?
 
 > Ok, vamos por partes...
 
@@ -319,11 +321,11 @@ Muito simples!
 
     É a mesma coisa, só que sem nome!
 
-- É possível representar QUALQUER algoritmo no Cálculo Lambda!
+- É possível implementar QUALQUER programa no Cálculo Lambda!
 
-- Você já usa ele e nem sabe disso! Quer ver?
+- Como? Já explico. Antes, deixa eu te mostrar que você JÁ USA o λc!
 
-# Redescobrindo o Cálculo Lambda...
+# Você já usa o Cálculo Lambda!
 
 > Começamos com programinha aleatório...
 ```python
@@ -340,7 +342,7 @@ if func is not None:
 show(nums) # [0, 2, 4, 6, 8]
 ```
 
-# Redescobrindo o Cálculo Lambda...
+# Você já usa o Cálculo Lambda!
 
 > Tiramos o "if"...
 ```python
@@ -356,7 +358,7 @@ for i in range(len(nums)):
 show(nums) # [0, 2, 4, 6, 8]
 ```
 
-# Redescobrindo o Cálculo Lambda...
+# Você já usa o Cálculo Lambda!
 
 > Tiramos o "for"...
 ```python
@@ -375,7 +377,7 @@ nums[4] = func(nums[4])
 show(nums) # [0, 2, 4, 6, 8]
 ```
 
-# Redescobrindo o Cálculo Lambda...
+# Você já usa o Cálculo Lambda!
 
 > Tiramos o "array"...
 ```python
@@ -402,9 +404,10 @@ show(num3) # 6
 show(num4) # 8
 ```
 
-# Redescobrindo o Cálculo Lambda...
+# Você já usa o Cálculo Lambda!
 
-> Tiramos os números!
+> Tiramos os números: Cálculo Lambda! **Python = Lambda + Coisas**
+
 ```python
 def show(num):
     print(str(num(lambda x: x+1)(0)))
@@ -429,9 +432,7 @@ show(num3) # 6
 show(num4) # 8
 ```
 
-> O que restou é o Cálculo Lambda!
-
-# De Linguagem X para Cálculo Lambda
+# É possível escrever QUALQUER programa no Cálculo Lambda
 
 | Feature     | Python             | Cálculo Lambda                       |
 |-------------|--------------------|--------------------------------------|
@@ -449,29 +450,27 @@ show(num4) # 8
 | loop        | while x: f()       | (Y λW λc λs λf (if (c s) (W c (f ... |
 | efeitos     | print("oi")        | monadic binding to external env...   |
 
-- TODO conceito pode ser representado, de uma forma ou de outra!
+- Difícil? Talvez! Mas você não precisar usar o ele diretamente, ta bom?
 
-- Difícil? Talvez! Mas você não precisar usar o ele diretamente.
+# Mas o que λs tem a ver com paralelismo?
 
-- O paradigma funcional é baseado nele. Haskell, Lean, Clojure, Elixir...
+- Me prometeram que "funcional = paralelo" 🥳 
 
-# Porém, o Cálculo Lambda tem suas limitações...
+- Mas a regra de substituição β não é atômica... fui iludido?
 
-- A regra de "substituição" não é atômica: ineficiente / anti-paralelismo
+- Outros modelos, como a Máquina de Turing, sofrem problemas similares...
 
-- Outros modelos como Máquina Turing, Automatas Celulares: problemas similares
+- **P:** *"Quais são as regras fundamentais da computação?"* - Yves Lafont, 1997
 
-- Pergunta: "quais são as regras fundamentais da computação?" - Yves Lafont, 1997
+- **R:** *"Combinadores de Interação"* - Yves Lafont, 1997
 
-- Resposta: aniquilação e comutação, ou seja, *Combinadores de Interação*
+- Um modelo computacional fundamentalmente paralelo, capaz de:
 
-- Um modelo computacional paralelo com 3 símbolos e 6 regras de reescrita
+    - 1. Emular outros sem perda de performance: Super Turing Completo?
 
-- Emula outros sistemas *sem perda de performance*! "Super Turing Completo"
+    - 2. Computar termos-λ otimamente e em paralelo: Super Cálculo Lambda?
 
-- **Capaz de computar termos lambda otimamente, e em paralelo!**
-
-- Let's go deeper...
+- Interessante. Let's go deeper...
 
 # Interaction Combinators: 3 symbols, 6 interactions
 
@@ -500,6 +499,7 @@ show(num4) # 8
       | |---| |    =>     X             │     |:|---|:|    =>     X              
    ---|/     \|---    ---' '---         │  ---|/     \|---    ---' '---          
 
+
 # Do Lambda Calculus para Interaction Combinators
 
           Lambda Calculus => Interaction Combinator
@@ -523,6 +523,22 @@ show(num4) # 8
          x --|/
 
   *"duplicamos vars com DUPs"*  *"apagamos vars com ERAs"*
+
+# E agora?
+
+- Agora a gente consegue reduzir QUALQUER linguagem em paralelo, via:
+
+    Linguagem -> Cálculo Lambda -> Combinadores de Interação
+
+MUITA INFORMAÇÃO! Eu sei.
+
+Mas calma, é igual explicar boardgame...
+
+Tudo fica mais fácil com um exemplo real.
+
+Eu prometo.
+
+*respira*
 
 # HVM: exemplo completo
 
@@ -936,7 +952,25 @@ Temos uma comunidade de pessoas apaixonadas pela área.
 
 Entusiastas de todos os níveis são bem-vindos!
 
-Discord: https://discord.HigherOrderCO.com/
+https://HigherOrderCO.com/
+
+~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Benchmarks e programas mostrados disponíveis em:
+https://github.com/VictorTaelin/talks/
 
 # Obrigado!                                                                                     ᵖʸᵗʰᵒⁿ
                                                                                                    │
@@ -961,6 +995,7 @@ Minhas redes:                                                                   
                                                                                                    │
 - GitHub: @VictorTaelin                                                                            │
                                                                                                    │
-- Reddit: /u/SrPeixinho                                                                            │
+- Reddit: /u/SrPeixinho                                                                            │ 
+                                                                                                   │
                                                                                                   ...
 -------------------------------------------------------------------------------------------------------
