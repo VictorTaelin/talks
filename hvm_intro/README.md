@@ -51,6 +51,8 @@
 
 - Complexidade na estruturação do código
 
+"vc tem 2 problemas"
+
 # GPT programando sequencial
 
 > Implement a C program that creates a tree with ints from 0 to 2^24-1 and then sums all.
@@ -138,6 +140,8 @@ for (int i = 0; i < limit; ++i) {
 
 - Protótipo lançado ano passado, 1a versão estável em algumas semanas!
 
+- *comentar sobre coisas tipo arrayfire*
+
 # Exemplo: somando árvores - Python
 
 ```python
@@ -154,7 +158,7 @@ def sum_tree(t: dict) -> int:
     else:
         return sum_tree(t["x0"]) + sum_tree(t["x1"])
 
-print(sum_tree(gen(21)))
+print(sum_tree(gen(24)))
 ```
 
 # Exemplo: somando árvores - JavaScript
@@ -237,7 +241,7 @@ main = (sum (gen 24))
 
 # Como é possível?
 
-[ ] Eu sou um gênio
+[ ] A HVM foi feita pelo GPT-6
 
 [ ] Eu roubei nos benchmarks
 
@@ -276,88 +280,47 @@ main = (sum (gen 24))
 
 - Lambdas, dados compartilhados, comunicação... a HVM cuida de **tudo**
 
-# Como funciona?
+# Como o HVM funciona?
 
-- A HVM é baseada em Combinadores de Interação
+Muito simples!
 
-- Inventados para otimizar o Cálculo Lambda
+- 1. Pegamos um programa de alto nível (Python, JavaScript, etc.)
 
-- Acabou se mostrando muito mais fundamental
+- 2. Transformamos em um termo do **Cálculo Lambda**
 
-- Enraizado na lógica, formente confluente, inerentemente paralelo
+- 3. Transformamos em um grafo de **Combinadores de Interação**
 
-> Este artigo aborda a seguinte questão: quais são as leis fundamentais da
-> computação? Máquinas de Turing modelam apenas computação sequencial. Autômatos
-> celulares modelam computação distribuída, mas com sincronização global.
-> Sistemas de reescrita como o cálculo-λ têm uma interpretação lógica
-> interessante. No entanto, a regra de β-redução é mais complicada do que
-> parece: é razoável considerar "substituição" como uma operação atômica? Um
-> sistema mais primitivo é a lógica combinatória, mas, novamente, é razoável
-> considerar apagamento e duplicação de árvores completas como operações
-> atômicas? Redes de interação foram introduzidas como um modelo de computação
-> distribuída com sincronização local. Do ponto de vista da computabilidade,
-> redes de interação são equivalentes às máquinas de Turing, mas, do ponto de
-> vista da computação, há algo mais; por exemplo, paralelismo. Para expressar
-> isso rigorosamente, introduzimos uma noção de tradução de sistemas preservando
-> as propriedades essenciais da computação, como a complexidade e o grau de
-> paralelismo. É mostrado que um sistema muito simples de combinadores de
-> interação, com apenas três símbolos e seis regras, é um modelo universal de
-> computação distribuída. Isso sugere uma resposta à nossa pergunta original: as
-> leis fundamentais da computação são comutação e aniquilação.
+- 4. Aplicamos **regras de reescrita paralelas**, até acabar
 
-> Lafont, Yves. “Interaction Combinators.” Inf. Comput. 137 (1997): 69-101.
+- 5. Convertemos de volta para um termo do **Cálculo Lambda**
 
-# Interaction Combinators
+- 6. Convertemos de volta pra **Combinadores de Interação**
 
-                          Symbols (Graph Nodes)                              
-                          =====================                              
-                                                                             
-       Eraser (ERA)         Constructor (CON)         Duplicator (DUP)       
-                                                                             
-                                    /|--                      /|--           
-          O----                 O--| |                    O--|#|             
-                                    \|--                      \|--           
-                                                                             
-                       Interactions (Rewrite Rules)                          
-                       ============================                          
-                                                                             
-    ERA-CON                            ERA-ERA                               
-                                                                             
-             /|---    O-----               O-----O     =>       nothing      
-        O---| |    =>                                                        
-             \|---    O-----                                                 
-                                       CON-DUP                /|-------|\    
-    ERA-DUP                                               ---|#|       | |---
-                                       ---|\     /|---        \|--, ,--|/    
-             /|---    O-----              | |---|#|    =>          X         
-        O---|#|    =>                  ---|/     \|---        /|--' '--|\    
-             \|---    O-----                              ---|#|       | |---
-                                                              \|-------|/    
-    CON-CON                            DUP-DUP                               
-                                                                             
-    ---|\     /|---    ---, ,---       ---|\     /|---    ---, ,---          
-       | |---| |    =>     X              |#|---|#|    =>     X              
-    ---|/     \|---    ---' '---       ---|/     \|---    ---' '---          
-                                                                             
-# O Cálculo Lambda
+- 7. Printamos resultados, lançamos chamadas de sistema, etc.
 
-- De assustador só tem o nome
+> ????????? ??      ? ? ?           ?
 
-- Basicamente uma linguagem com apenas 1 tipo: lambdas
-    
-    λvar.corpo <- isso é um lambda sz
+> Ok, vamos por partes...
 
-- A única operação disponível é "substituição". Exemplo:
+# O que é o Cálculo Lambda
 
-    (λx.[1, 2, x, 3, 4] 900)
-    ------------------------ vira...
-    [1, 2, 900, 3, 4]
+- O Cálculo Lambda é uma linguagem que contém apenas lambdas.
 
-- E é isso. Acabou. É literalmente só isso. Aaaa
+- Um lambda é uma função anônima. Exemplo:
 
-- Turing Completo: "capaz de implementar qualquer coisa"
+    Na matemática, temos...
 
-- Você já usa e nem sabe disso! Quer ver?
+    f(x) = x * 2
+
+    No cálculo lambda, temos...
+
+    λx. (x * 2)
+
+    É a mesma coisa, só que sem nome!
+
+- É possível representar QUALQUER algoritmo no Cálculo Lambda!
+
+- Você já usa ele e nem sabe disso! Quer ver?
 
 # Redescobrindo o Cálculo Lambda...
 
@@ -492,11 +455,60 @@ show(num4) # 8
 | efeitos     | print("oi")        | monadic binding to external env...   |
 | ...         | ...                | ...                                  |
 
-- TODO conceito pode ser representado, de uma forma ou de outra
+- TODO conceito pode ser representado, de uma forma ou de outra!
 
 - Diversas maneiras de representar cada conceito, com diferentes méritos
 
 - Difícil? Talvez! Por isso compilamos linguagens mais simples pro λC.
+
+- Todo um paradigma baseado nele: funcional. Haskell, Elixir, Clojure...
+
+# Porém, o Cálculo Lambda tem suas limitações...
+
+- A regra de "substituição" não é atômica: ineficiente / complica paralelismo
+
+- Outros modelos como Máquina Turing, Automatas Celulares: problemas similares
+
+- Yves Lafont, 1997: "quais são as regras fundamentais da computação?"
+
+- Resposta: um modelo computacional chamado Interaction Combinators
+
+- Emulam outros *sem perda de performance/paralelismo*! "Super Turing Completo"
+
+- **São capazes de computar termos lambda otimamente e em paralelo!**
+
+# Interaction Combinators
+
+                               Symbols (Graph Nodes)                             
+                               =====================                             
+                                                                                 
+           Eraser (ERA)          Constructor (CON)        Duplicator (DUP)       
+                                                                                 
+                                        /|--                      /|--           
+              O----                  --| |                     --|#|             
+                                        \|--                      \|--           
+                                                                                 
+                            Interactions (Rewrite Rules)                         
+                            ============================                         
+                                                                                 
+   ERA-CON                              │ ERA-ERA                                
+             /|---    O-----            │                                        
+        O---| |    =>                   │      O-----O     =>       nothing      
+             \|---    O-----            │                                        
+────────────────────────────────────────┼────────────────────────────────────────
+   ERA-DUP                              │  CON-DUP                /|-------|\    
+                                        │                     ---|:|       | |---
+             /|---    O-----            │  ---|\     /|---        \|--, ,--|/    
+        O---|:|    =>                   │     | |---|:|    =>          X         
+             \|---    O-----            │  ---|/     \|---        /|--' '--|\    
+                                        │                     ---|:|       | |---
+                                        │                         \|-------|/    
+────────────────────────────────────────┼────────────────────────────────────────
+   CON-CON                              │  DUP-DUP                               
+                                        │                                        
+   ---|\     /|---    ---, ,---         │  ---|\     /|---    ---, ,---          
+      | |---| |    =>     X             │     |:|---|:|    =>     X              
+   ---|/     \|---    ---' '---         │  ---|/     \|---    ---' '---          
 
 # Do Cálculo Lambda para Interaction Combinators
 
@@ -513,30 +525,14 @@ show(num4) # 8
                                                      
   *"um lambda vira um CON"*     *"uma aplicação vira um CON"*
 
-        λx. (vários x)              λx. (nenhum x)
-        --------------              --------------  
-        
-          x --|\
-              |#|-- x                    O-- x
-          x --|/
+       λx. (vários x)               λx. (nenhum x)
+       --------------               --------------  
+       
+         x --|\
+             |#|-- x                    O-- x
+         x --|/
 
   *"duplicamos vars com DUPs"*  *"apagamos vars com ERAs"*
-
-# HVM: a receita completa
-
-- 1. Pegamos um programa de alto nível
-
-- 2. Transformamos em um termo lambda: **lang -> λterm**
-
-- 3. Transformamos em interaction combinators: **λterm -> inet**
-
-- 4. Aplicamos **regras de interação paralelas**, até acabar: **eval(inet)**
-
-- 5. Convertemos de volta pro cálculo lambda: **inet -> λterm**
-
-- 6. Convertemos de volta pra a linguagem original: **λterm -> lang**
-
-- 7. Printamos resultados, lançamos chamadas de sistema, etc.
 
 # Exemplo completo
 
@@ -729,7 +725,7 @@ let dobro = λx.
                           :   :  : :       
                          /_\ /_\ : :       
                          : :.: :.:.:       
-                         ........:         
+                         :.......:         
 
 # Exemplo completo
 
