@@ -1,4 +1,4 @@
-# HVM: o futuro da computação paralela
+# HVM: o Runtime Paralelo
 
 | Higher Order Company |
 |----------------------|
@@ -24,7 +24,19 @@
 
 > Victor Taelin
 
-# Trend paralelismo - hardware
+# HVM: um programa que roda programas
+
+Rodamos um Radix Sort na HVM, e comparamos com runtimes modernos.
+
+| Runtime         | Tempo   |
+|-----------------|---------|
+| JavaScript (V8) | 29.081s |
+| Haskell (GHC)   | 11.073s |
+| Kind (HVM)      | 02.514s |
+
+Como é possível? Já vou explicar! Mas antes...
+
+# A história do paralelismo no hardware
 
 | Ano  | Empresa | Modelo                           | Núcleos    |
 |------|---------|----------------------------------|------------|
@@ -37,7 +49,7 @@
 
 > CPUs de Consumo com Maior Número de Núcleos por ano, Intel e AMD, 2003-2023
 
-# Trend paralelismo - software
+# A história do paralelismo no software
 
 | Linguagem  | % paralelo |
 |------------|------------|
@@ -106,30 +118,7 @@ void* sumTree(void* args) {
 **Tempo   : 2 meses**
 *https://chat.openai.com/share/805b2df2-a9ea-4a1c-b52b-bb69fa7f624b*
 
-# Por que linguagens não usam todos os núcleos?
-
-- Overheads podem não compensar (spawn, locks, atomics...)
-
-- Linguagens tradicionalmente foram modeladas para 1 núcleo.
-
-- Loops são sequenciais, referências mutáveis causam 1000 problemas.
-```c
-// só incrementou 1 vez???! ?!? ?   ?                                         ?
-void add_1(int *x) {
-  int val = *x;
-  *x = val + 1;
-}
-```
-- Análise **estática** não funciona. É necessário informação **dinâmica**!
-```c
-// paralelizar ou não? depende!
-for (int i = 0; i < 64; ++i) {
-  arr[i] = funcao_pesada(arr[i]);
-}
-```
-- Basicamente um problema de pesquisa, sem resultados suficientemente bons.
-
-# HVM: um runtime massivamente paralelo
+# HVM: paralelismo automático ao resgate!
 
 - A **HVM** executa linguagens de **alto nível** com **paralelismo automático**
 
@@ -321,9 +310,7 @@ main = (sum (gen 24))
 
     É a mesma coisa, só que sem nome!
 
-- É possível implementar QUALQUER programa no Cálculo Lambda!
-
-- Como? Já explico. Antes, deixa eu te mostrar que você JÁ USA o λc!
+- De assustador só tem o nome. De fato, VOCÊ JÁ USA ELE!
 
 # Você já usa o Cálculo Lambda!
 
@@ -432,7 +419,7 @@ show(num3) # 6
 show(num4) # 8
 ```
 
-# É possível escrever QUALQUER programa no Cálculo Lambda
+# É possível transformar QUALQUER linguagem no Cálculo Lambda!
 
 | Feature     | Python             | Cálculo Lambda                       |
 |-------------|--------------------|--------------------------------------|
@@ -458,17 +445,11 @@ show(num4) # 8
 
 - Mas a regra de substituição β não é atômica... fui iludido?
 
-- Outros modelos, como a Máquina de Turing, sofrem problemas similares...
+- E agora? Bem... existe um OUTRO modelo que é realmente paralelo.
 
 - **P:** *"Quais são as regras fundamentais da computação?"* - Yves Lafont, 1997
 
 - **R:** *"Combinadores de Interação"* - Yves Lafont, 1997
-
-- Um modelo computacional fundamentalmente paralelo, capaz de:
-
-    - 1. Emular outros sem perda de performance: Super Turing Completo?
-
-    - 2. Computar termos-λ otimamente e em paralelo: Super Cálculo Lambda?
 
 - Interessante. Let's go deeper...
 
@@ -500,7 +481,7 @@ show(num4) # 8
    ---|/     \|---    ---' '---         │  ---|/     \|---    ---' '---          
 
 
-# Do Lambda Calculus para Interaction Combinators
+# É possível transformar o Cálculo Lambda nos Interaction Combinators!
 
           Lambda Calculus => Interaction Combinator
           =========================================
@@ -526,19 +507,27 @@ show(num4) # 8
 
 # E agora?
 
-- Agora a gente consegue reduzir QUALQUER linguagem em paralelo, via:
+- Se qualquer linguagem pode virar o Cálculo Lambda...
 
-    Linguagem -> Cálculo Lambda -> Combinadores de Interação
+- Se o Cálculo Lambda pode virar Interaction Combinators...
 
-MUITA INFORMAÇÃO! Eu sei.
+- Se Interaction Combinators podem ser processados em paralelo...
 
-Mas calma, é igual explicar boardgame...
+- Então **qualuer linguagem pode ser processada em paralelo!**
 
-Tudo fica mais fácil com um exemplo real.
+> Desde que o programa não seja "inerentemente sequencial"
 
-Eu prometo.
+# SOCORRO MUITA INFORMAÇÃO
+
+Eu sei. Calma.
+
+É igual explicar boardgame...
+
+Fica mais fácil na prática.
 
 *respira*
+
+*Que tal um exemplo prático?*
 
 # HVM: exemplo completo
 
@@ -907,7 +896,7 @@ X = (dobro λs.λz.(s z))
 
 # HVM é uma implementação eficiente
 
-> "Tudo isso para somar 2 números?"
+> "Tudo isso para multiplicar um número?"
 
 - Pointeiros de 64-bit: 128 bits por lambda!
 
