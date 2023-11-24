@@ -10,6 +10,17 @@
 | │      ╭╯         │  |
 | ╰──────╯          ●  |
 
+
+
+
+
+
+
+
+
+
+
+
 > Victor Taelin
 
 # Trend paralelismo - hardware
@@ -97,7 +108,7 @@ void* sumTree(void* args) {
 
 *https://chat.openai.com/share/805b2df2-a9ea-4a1c-b52b-bb69fa7f624b*
 
-# Paralelismo automático: desafios
+# Por que linguagens não usam todos os núcleos?
 
 - Linguagens são modeladas para 1 núcleo (loops são sequenciais)
 
@@ -106,8 +117,8 @@ void* sumTree(void* args) {
 - Incompatível com referências mutáveis (race conditions, etc.)
 
 ```c
-// duas threads executam
-// x incrementado 1 vez?
+// se duas threads executam essa função, pode
+// ser que *x só seja incrementado uma vez!
 void fn(int *x) {
   int val = *x;
   *x = val + 1;
@@ -117,8 +128,7 @@ void fn(int *x) {
 - Análise **estática** não funciona. É necessário informação **dinâmica**!
 
 ```c
-// parallelizar ou não?
-// depende da execução!
+// paralelizar ou não? depende do momento...
 for (int i = 0; i < limit; ++i) {
   arr[i] *= 2;
 }
@@ -128,21 +138,23 @@ for (int i = 0; i < limit; ++i) {
 
 # HVM: um runtime massivamente paralelo
 
-- Runtimes, tal como VMs, são "programas que rodam programas"
+- Runtimes são "programas que rodam programas"
 
 - HVM executa linguagens de *alto nível* com paralelismo automático
+
+- Completamente geral (em contraste com soluções data-parallel/array-based)
 
 - Funcional: lambdas, recursividade, tipos algébricos, pattern-matching...
 
 - Procedural: loops, branching, efeitos, "mutabilidade pura"...
 
-- Promessa: se a sua *lógica* não é sequencial, seu *executável* será paralelo 
+- **A promessa: se a sua lógica não é sequencial, seu executável será paralelo!**
 
 - Protótipo lançado ano passado, 1a versão estável em algumas semanas!
 
-- *comentar sobre coisas tipo arrayfire*
+- Para ilustrar, vamos comparar tempos de execução de "programas equivalentes"
 
-# Exemplo: somando árvores - Python
+# Somando árvores - Python
 
 ```python
 def gen(n: int) -> dict:
@@ -161,7 +173,7 @@ def sum_tree(t: dict) -> int:
 print(sum_tree(gen(24)))
 ```
 
-# Exemplo: somando árvores - JavaScript
+# Somando árvores - JavaScript
 
 ```javascript
 function gen(n) {
@@ -184,7 +196,7 @@ function sum(t) {
 console.log(sum(gen(24)));
 ```
 
-# Exemplo: somando árvores - C
+# Somando árvores - C
 
 ```c
 Tree* gen(unsigned int n) {
@@ -210,7 +222,7 @@ int main() {
 }
 ```
 
-# Exemplo: somando árvores - HVM
+# Somando árvores - HVM
 
 ```haskell
 data Tree = (Leaf x) | (Node x0 x1)
@@ -253,7 +265,7 @@ main = (sum (gen 24))
 
 # Tempo X Núcleos
                                                          🌙 Python
-    tempo                                                    
+    Tempo                                                    
     ~2.16s ┼───╮
     ~2.00s ┤   │
     ~1.84s ┤   │
@@ -268,19 +280,17 @@ main = (sum (gen 24))
     ~0.38s ┼───────────────────────╰───────────────╮─────── C
     ~0.22s ┤                                       ╰─────── HVM
            0   1   2   3   4   5   6   7   8   9  10  11  12
-                                núcleos
+                                Núcleos
 
 - Ainda há muito a melhorar em 1 núcleo!
 
-- Uso manual e correto de threads em C **será** mais rápido!
+- Uso manual e correto de threads em C sempre será mais rápido!
 
-- O ponto é: paralelismo correto, sem esforço, com features de alto nível
+- Então por que? Paralelismo correto, sem esforço, em linguagens alto nível
 
-- Implementar certos algoritmos em paralelo na mão beira o impossível
+- Lambdas, referências compartilhadas, comunicação... a HVM cuida de **tudo**
 
-- Lambdas, dados compartilhados, comunicação... a HVM cuida de **tudo**
-
-# Como o HVM funciona?
+# Qual o segredo?
 
 Muito simples!
 
@@ -302,9 +312,9 @@ Muito simples!
 
 > Ok, vamos por partes...
 
-# O que é o Cálculo Lambda
+# O que é o Cálculo Lambda?
 
-- O Cálculo Lambda é uma linguagem que contém apenas lambdas.
+- O Cálculo Lambda é uma linguagem que contém apenas lambdas
 
 - Um lambda é uma função anônima. Exemplo:
 
@@ -433,7 +443,7 @@ show(num3) # 6
 show(num4) # 8
 ```
 
-> Cálculo Lambda!
+> Pronto, esse é o Cálculo Lambda!
 
 # De Linguagem X para Cálculo Lambda
 
@@ -459,37 +469,33 @@ show(num4) # 8
 
 - Diversas maneiras de representar cada conceito, com diferentes méritos
 
-- Difícil? Talvez! Por isso compilamos linguagens mais simples pro λC.
+- Difícil? Talvez! Mas você não precisar usar o Cálculo Lambda diretamente.
 
-- Todo um paradigma baseado nele: funcional. Haskell, Elixir, Clojure...
+- O paradigma funcional é baseado nele. Haskell, Lean, Clojure, Elixir...
 
 # Porém, o Cálculo Lambda tem suas limitações...
 
-- A regra de "substituição" não é atômica: ineficiente / complica paralelismo
+- A regra de "substituição" não é atômica: ineficiente / anti-paralelismo
 
 - Outros modelos como Máquina Turing, Automatas Celulares: problemas similares
 
-- Yves Lafont, 1997: "quais são as regras fundamentais da computação?"
+- Pergunta: "quais são as regras fundamentais da computação?" - Yves Lafont, 1997
 
-- Resposta: um modelo computacional chamado Interaction Combinators
+- Resposta: aniquilação e comutação, ou seja, *Combinadores de Interação*
 
-- Emulam outros *sem perda de performance/paralelismo*! "Super Turing Completo"
+- Um modelo computacional paralelo com 3 símbolos e 6 regras de reescrita
 
-- **São capazes de computar termos lambda otimamente e em paralelo!**
+- Emula outros sistemas *sem perda de performance*! "Super Turing Completo"
 
-# Interaction Combinators
+- **Capaz de computar termos lambda otimamente, e em paralelo!**
 
-                               Symbols (Graph Nodes)                             
-                               =====================                             
-                                                                                 
+# Interaction Combinators: 3 symbols, 6 interactions
+
            Eraser (ERA)          Constructor (CON)        Duplicator (DUP)       
                                                                                  
                                         /|--                      /|--           
               O----                  --| |                     --|#|             
                                         \|--                      \|--           
-                                                                                 
-                            Interactions (Rewrite Rules)                         
-                            ============================                         
                                                                                  
    ERA-CON                              │ ERA-ERA                                
              /|---    O-----            │                                        
@@ -510,7 +516,7 @@ show(num4) # 8
       | |---| |    =>     X             │     |:|---|:|    =>     X              
    ---|/     \|---    ---' '---         │  ---|/     \|---    ---' '---          
 
-# Do Cálculo Lambda para Interaction Combinators
+# Do Lambda Calculus para Interaction Combinators
 
           Lambda Calculus => Interaction Combinator
           =========================================
@@ -534,7 +540,7 @@ show(num4) # 8
 
   *"duplicamos vars com DUPs"*  *"apagamos vars com ERAs"*
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 1. Pegamos um programa de alto nível
 
@@ -545,7 +551,7 @@ def dobro(x):
 print(dobro(1))
 ```
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 2. Transformamos em um termo lambda
 
@@ -556,9 +562,9 @@ let dobro = λx.
 (dobro λs.λz.(s z))
 ```
 
-# Exemplo completo
+# HVM: exemplo completo
 
-> 3. Transformamos em interaction combinators
+> 3. Transformamos em Interaction Combinators
 
                 .............              
                 :           :              
@@ -575,7 +581,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -594,7 +600,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -613,7 +619,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -632,7 +638,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -651,7 +657,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -670,7 +676,7 @@ let dobro = λx.
                     :.:........: :.: :.:.: 
                       :................:   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -689,7 +695,7 @@ let dobro = λx.
                     :.+........: :.: :.+.: 
                       ++++++++++++++++++   
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -709,7 +715,7 @@ let dobro = λx.
                       :.:........:       : 
                         :................: 
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 4. Aplicamos **regras de interação paralelas**, até acabar
 
@@ -727,7 +733,7 @@ let dobro = λx.
                          : :.: :.:.:       
                          :.......:         
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -746,7 +752,7 @@ let dobro = λx.
                        : s z s :           
                        :.......:           
                                            
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -767,7 +773,7 @@ let dobro = λx.
                                     : :    
                                     s z    
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -785,7 +791,7 @@ let dobro = λx.
                                     : :    
                                     s z    
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -800,7 +806,7 @@ let dobro = λx.
                                   s : :    
                                     s z    
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -818,7 +824,7 @@ let dobro = λx.
                                                 
                                                 
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -834,7 +840,7 @@ let dobro = λx.
                                                    
                                                    
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 5. Convertemos de volta pro cálculo lambda
 
@@ -842,7 +848,7 @@ let dobro = λx.
 
                                X = λs.λz.(s (s z))
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 6. Convertemos de volta pra a linguagem original
 
@@ -851,7 +857,7 @@ let dobro = λx.
                                X = 2
 ```
 
-# Exemplo completo
+# HVM: exemplo completo
 
 > 7. Printamos resultados, lançamos chamadas de sistema, etc.
 
@@ -879,3 +885,40 @@ let dobro = λx.
 - Muito a melhorar, porém já é competitivo
 
 
+# Resumo
+
+1. Processadores estão ficando cada vez mais paralelos
+
+2. Programas, em geral, não tem acompanhado a trend
+
+3. Motivo: programar paralelamente é difícil e custoso
+
+4. Abordagens para paralelismo automático não tiveram êxito
+
+5. HVM: paralelismo automático com resultados promissores
+
+6. Baseada em um modelo computacional projetado para paralelismo
+
+7. **programa -> λterm -> icomb -> eval() -> λterm -> programa**
+
+# Obrigado!
+
+A HOC é uma empresa brasileira inovando no âmbito tecnológico.
+
+Temos uma comunidade de apaixonados por computação.
+
+Entusiastas de todos os níveis são bem-vindos!
+
+Discord: https://discord.HigherOrderCO.com/
+
+Minhas redes:
+
+- Twitter: @VictorTaelin
+
+- Instagram: @VictorTaelin
+
+- GitHub: @VictorTaelin
+
+- Reddit: /u/SrPeixinho
+
+-------------------------------------------------------------------------------------------------------
