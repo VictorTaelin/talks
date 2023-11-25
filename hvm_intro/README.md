@@ -51,17 +51,7 @@ Como é possível? Já vou explicar! Mas antes...
 
 # A história do paralelismo no software
 
-| Linguagem  | % paralelo |
-|------------|------------|
-| C          |        X % |
-| Go         |        X % |
-| Haskell    |        X % |
-| Java       |        X % |
-| JavaScript |        X % |
-| Python     |        X % |
-| Rust       |        X % |
-
-> Percentual de projetos no top 1000 do GitHub usando paralelismo, por linguagem
+... é complicado.
 
 # Por que?
 
