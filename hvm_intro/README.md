@@ -51,7 +51,15 @@ Como é possível? Já vou explicar! Mas antes...
 
 # A história do paralelismo no software
 
-... é complicado.
+- Que história...?
+
+- Apenas 8.3% dos top 10k projetos em C usam threads!
+
+- Em outras linguagens, o número é bem menor.
+
+- Comum em projetos importantes, mas não no dia-a-dia.
+
+> Pesquisa: https://psoft.HigherOrderCo.com/
 
 # Por que?
 
